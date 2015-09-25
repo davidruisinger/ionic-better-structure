@@ -1,0 +1,13 @@
+{
+	"name": "ionic_better_structure",
+	"app_id": "",
+	"gulpStartupTasks": [
+		"sass",
+		"watch"
+	],
+	"documentRoot": "dev",
+	"watchPatterns": [
+		"dev/**/*",
+		"!dev/lib/**/*"
+	]
+}

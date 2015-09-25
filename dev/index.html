@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+		<title></title>
+
+		<!-- mima app's style -->
+		<!-- build:css -->
+		<link href="styles/ionic.app.css" rel="stylesheet">
+		<!-- endbuild -->
+
+		<!-- ionic/angularjs js -->
+		<script src="lib/ionic/js/ionic.bundle.js"></script>
+
+		<!-- cordova script -->
+		<script src="cordova.js"></script>
+
+		<!-- mima app's js -->
+		<!-- build:js -->
+
+		<!-- Add all scripts here. Will be replaced with a single concatenated file during build -->
+		<script src="app/_app.module.js"></script>
+		<script src="app/app.config.js"></script>
+		<script src="app/app.routes.js"></script>
+		<script src="app/app.run.js"></script>
+		<script src="app/core/app.core.module.js"></script>
+		<script src="app/dash/dash.controller.js"></script>
+		<script src="app/chats/chats.controller.js"></script>
+		<script src="app/chats/chat-detail.controller.js"></script>
+		<script src="app/account/account.controller.js"></script>
+		<script src="app/services/chats.service.js"></script>
+		<!-- endbuild -->
+
+		<!-- mima templates js -->
+		<!-- build:templates -->
+		<!-- endbuild -->
+
+	</head>
+	<body ng-app="app">
+		<!--
+			The nav bar that will be updated as we navigate between views.
+		-->
+		<ion-nav-bar class="bar-stable">
+			<ion-nav-back-button>
+			</ion-nav-back-button>
+		</ion-nav-bar>
+		<!--
+			The views will be rendered in the <ion-nav-view> directive below
+			Templates are in the /templates folder (but you could also
+			have templates inline in this html file if you'd like).
+		-->
+		<ion-nav-view></ion-nav-view>
+	</body>
+</html>
