@@ -121,7 +121,7 @@ gulp.task('inject', ['wiredep', 'styles', 'templatecache'], function() {
 
 gulp.task('watch', function() {
 	gulp.watch(config.sass, ['styles']);
- 	gulp.watch(paths.scripts, ['vet']);
+ 	gulp.watch(config.alljs, ['vet']);
 });
 
 /**

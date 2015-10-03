@@ -2,7 +2,7 @@
 	'use strict';
 
 	angular
-		.module('app')
+		.module('app.chats')
 		.factory('ChatsService', chatsService);
 
 	chatsService.$inject = [];
