@@ -56,7 +56,6 @@
 
 	"globals": {
 			"angular": false,
-			"$": false,
 			"cordova": false,
 			"StatusBar": false
 	}

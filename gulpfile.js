@@ -1,127 +1,337 @@
-var gulp = require('gulp');
-var gutil = require('gulp-util');
-var bower = require('bower');
-var concat = require('gulp-concat');
-var sass = require('gulp-sass');
-var minifyCss = require('gulp-minify-css');
-var rename = require('gulp-rename');
-var sh = require('shelljs');
-var jshint = require('gulp-jshint');
+var args = require('yargs').argv;
+var config = require('./gulp.config')();
 var del = require('del');
-var htmlreplace = require('gulp-html-replace');
-var vinylPaths = require('vinyl-paths');
-var ngAnnotate = require('gulp-ng-annotate');
-var uglify = require("gulp-uglify");
-var templateCache = require('gulp-angular-templatecache');
+var gulp = require('gulp');
+var $ = require('gulp-load-plugins')({lazy: true});
 
-var paths = {
-	html: ['./dev/index.html'],
-	sass: ['./dev/styles/**/*.scss'],
-	scripts: ['./dev/app/**/*.js'],
-	templates: ['./dev/app/**/*.html'],
-	lib: ['./dev/lib/**'],
-	dist: ['./www/']
-};
+/**
+ * yargs variables can be passed in to alter the behavior, when present.
+ * Example: gulp serve-dev
+ *
+ * --verbose  : Various tasks will produce more output to the console.
+ */
 
-var files = {
-	jsbundle: 'app.bundle.min.js',
-	appcss: 'app.css'
-};
+/**
+ * List the available gulp tasks
+ */
+gulp.task('help', $.taskListing);
+gulp.task('default', ['help']);
 
-gulp.task('default', ['sass']);
+/**
+ * vet the code and create coverage report
+ * @return {Stream}
+ */
+gulp.task('vet', function() {
+	log('Analyzing source with JSHint and JSCS');
 
-gulp.task('build', ['sass', 'scripts', 'index', 'copy']);
-
-gulp.task('clean', function() {
-	return gulp.src(paths.dist, {
-			read: false
-		})
-		.pipe(vinylPaths(del))
+	return gulp
+		.src(config.alljs)
+		.pipe($.if(args.verbose, $.print()))
+		.pipe($.jshint())
+		.pipe($.jshint.reporter('jshint-stylish', {verbose: true}))
+		.pipe($.jshint.reporter('fail'))
+		.pipe($.jscs());
 });
 
-// Prepare Index.html for dist - ie. using min files
-gulp.task('index', ['clean'], function() {
-	gulp.src(paths.html)
-		.pipe(htmlreplace({
-			'css': 'css/ionic.app.min.css',
-			'js': 'js/app.bundle.min.js',
-			'templates': 'js/templates.js'
-		}))
-		.pipe(gulp.dest(paths.dist + '.'));
-});
+/**
+ * Compile sass to css
+ * @return {Stream}
+ */
+gulp.task('styles', [/*'clean-styles'*/], function(done) {
+	log('Compiling SASS --> CSS');
 
-gulp.task('sass', function(done) {
-	gulp.src('./dev/styles/ionic.app.scss')
-		.pipe(sass({
+	return gulp
+		.src(config.sass)
+		.pipe($.sass({
 			errLogToConsole: true
 		}))
-		.pipe(gulp.dest('./dev/styles/'))
-		.pipe(minifyCss({
-			keepSpecialComments: 0
-		}))
-		.pipe(rename({ extname: '.min.css' }))
-		.pipe(gulp.dest('./www/css/'))
-		.on('end', done);
+		.pipe(gulp.dest(config.temp));
 });
 
-// scripts - clean dist dir then annotate, minify, concat
-gulp.task('scripts', ['clean', 'lint', 'templateCache'], function() {
-	gulp.src(paths.scripts)
-		.pipe(ngAnnotate({
-			remove: true,
-			add: true,
-			single_quotes: true
-		}))
-		.pipe(uglify())
-		.pipe(concat(files.jsbundle))
-		.pipe(gulp.dest(paths.dist + 'js'));
+/**
+ * Copy ionic fonts
+ * @return {Stream}
+ */
+gulp.task('fonts', ['clean-fonts'], function() {
+	log('Copying fonts');
+
+	return gulp
+		.src(config.fonts)
+		.pipe(gulp.dest(config.build + 'fonts'));
 });
 
-// concat all html templates and load into templateCache
-gulp.task('templateCache', ['clean'], function() {
-	return gulp.src(paths.templates)
-		.pipe(templateCache({
-			'filename': 'templates.js',
-			'root': 'app/',
-			'module': 'app'
-		}))
-		.pipe(gulp.dest('./www/js'));
+/**
+ * Compress images
+ * @return {Stream}
+ */
+gulp.task('images', ['clean-images'], function() {
+	log('Compressing and copying images');
+
+	return gulp
+		.src(config.images)
+		.pipe($.imagemin({optimizationLevel: 4}))
+		.pipe(gulp.dest(config.build + 'images'));
 });
 
-// Copy all other files to dist directly
-gulp.task('copy', ['clean'], function() {
-	// Copy the whole lib folder
-	gulp.src(paths.lib)
-		.pipe(gulp.dest(paths.dist + 'lib/.')); 
+/**
+ * Create $templateCache from the html templates
+ * @return {Stream}
+ */
+gulp.task('templatecache', ['clean-code'], function() {
+	log('Creating an AngularJS $templateCache');
+
+	console.log(config.htmltemplates);
+	return gulp
+		.src(config.htmltemplates)
+		.pipe($.if(args.verbose, $.bytediff.start()))
+		.pipe($.minifyHtml({empty: true}))
+		.pipe($.if(args.verbose, $.bytediff.stop(bytediffFormatter)))
+		.pipe($.angularTemplatecache(
+			config.templateCache.file,
+			config.templateCache.options
+		))
+		.pipe(gulp.dest(config.temp));
 });
 
-gulp.task('lint', function() {
-	return gulp.src(paths.scripts)
-		.pipe(jshint())
-		.pipe(jshint.reporter('jshint-stylish'));
+/**
+ * Wire-up the bower dependencies
+ * @return {Stream}
+ */
+gulp.task('wiredep', function() {
+	log('Wiring the bower dependencies into the html');
+
+	var wiredep = require('wiredep').stream;
+	var options = config.getWiredepDefaultOptions();
+
+	return gulp
+		.src(config.index)
+		.pipe(wiredep(options))
+		.pipe(inject(config.js, '', config.jsOrder))
+		.pipe(gulp.dest(config.src));	
+});
+
+gulp.task('inject', ['wiredep', 'styles', 'templatecache'], function() {
+	log('Wire up css into the html, after files are ready');
+
+	return gulp
+		.src(config.index)
+		.pipe(inject(config.css))
+		.pipe(gulp.dest(config.src));
 });
 
 gulp.task('watch', function() {
-	gulp.watch(paths.sass, ['sass']);
-	gulp.watch(paths.scripts, ['lint']);
+	gulp.watch(config.sass, ['styles']);
+ 	gulp.watch(paths.scripts, ['vet']);
 });
 
+/**
+ * Build everything
+ * This is separate so we can run tests on
+ * optimize before handling image or fonts
+ */
+gulp.task('build', ['optimize', 'images', 'fonts'], function() {
+	log('Building everything');
+
+	var msg = {
+		title: 'gulp build',
+		subtitle: 'Deployed to the build folder'
+	};
+	del(config.temp);
+	log(msg);
+});
+
+/**
+ * Optimize all files, move to a build folder,
+ * and inject them into the new index.html
+ * @return {Stream}
+ */
+gulp.task('optimize', ['inject'/*, 'test' */], function() {
+	log('Optimizing the js, css, and html');
+
+	var assets = $.useref.assets();
+	var templateCache = config.temp + config.templateCache.file;
+
+	return gulp
+		.src(config.index)
+		.pipe($.plumber())
+		.pipe(inject(templateCache, 'templates'))
+		.pipe(assets)
+		//.pipe($.if('*.css', $.minifyCss()))
+		// Fix ionic fonts path
+		.pipe($.if('*.css', $.cssUrlAdjuster({
+			replace: ['../lib/ionic/fonts','../fonts'],
+		})))
+		.pipe($.if('**/' + config.optimized.app, $.ngAnnotate({add: true})))
+		.pipe($.if('**/' + config.optimized.app, $.uglify()))
+		.pipe($.if('**/' + config.optimized.lib, $.uglify()))
+		.pipe(assets.restore())
+		.pipe($.useref())
+		.pipe(gulp.dest(config.build));
+});
+
+/**
+ * Remove all files from the build and temp folder
+ * @param  {Function} done - callback when complete
+ */
+gulp.task('clean', ['clean-code'], function(done) {
+	var delconfig = [].concat(config.build + '**/*', config.temp);
+	log('Cleaning: ' + $.util.colors.blue(delconfig));
+	del(delconfig, done);
+});
+
+/**
+ * Remove all fonts from the build folder
+ * @param  {Function} done - callback when complete
+ */
+gulp.task('clean-fonts', function(done) {
+	clean(config.build + 'fonts/**/*.*', done);
+});
+
+/**
+ * Remove all images from the build folder
+ * @param  {Function} done - callback when complete
+ */
+gulp.task('clean-images', function(done) {
+	clean(config.build + 'images/**/*.*', done);
+});
+
+/**
+ * Remove all styles from the build and temp folders
+ * @param  {Function} done - callback when complete
+ */
+gulp.task('clean-styles', function(done) {
+	var files = [].concat(
+		config.temp + '**/*.css',
+		config.build + 'styles/**/*.css'
+	);
+	clean(files, done);
+});
+
+/**
+ * Remove all js and html from the build and temp folders
+ * @param  {Function} done - callback when complete
+ */
+gulp.task('clean-code', function(done) {
+	var files = [].concat(
+		config.temp + '**/*.js',
+		config.build + 'js/**/*.js',
+		config.build + '**/*.html'
+	);
+	clean(files, done);
+});
+
+/**
+ * Run specs once and exit
+ * To start servers and run midway specs as well:
+ *    gulp test --startServers
+ * @return {Stream}
+ */
+gulp.task('test', ['vet', 'templatecache'], function(done) {
+	//startTests(true /*singleRun*/ , done);
+});
+
+
 gulp.task('install', ['git-check'], function() {
-	return bower.commands.install()
+	return $.bower.commands.install()
 		.on('log', function(data) {
-			gutil.log('bower', gutil.colors.cyan(data.id), data.message);
+			$.gutil.log('bower', $.gutil.colors.cyan(data.id), data.message);
 		});
 });
 
 gulp.task('git-check', function(done) {
-	if (!sh.which('git')) {
+	if (!$.shelljs.which('git')) {
 		console.log(
-			'  ' + gutil.colors.red('Git is not installed.'),
+			'  ' + $.gutil.colors.red('Git is not installed.'),
 			'\n  Git, the version control system, is required to download Ionic.',
-			'\n  Download git here:', gutil.colors.cyan('http://git-scm.com/downloads') + '.',
-			'\n  Once git is installed, run \'' + gutil.colors.cyan('gulp install') + '\' again.'
+			'\n  Download git here:', $.gutil.colors.cyan('http://git-scm.com/downloads') + '.',
+			'\n  Once git is installed, run \'' + $.gutil.colors.cyan('gulp install') + '\' again.'
 		);
 		process.exit(1);
 	}
 	done();
 });
+
+////////////////
+
+/**
+ * Formatter for bytediff to display the size changes after processing
+ * @param  {Object} data - byte data
+ * @return {String}      Difference in bytes, formatted
+ */
+function bytediffFormatter(data) {
+	var difference = (data.savings > 0) ? ' smaller.' : ' larger.';
+		return data.fileName + ' went from ' +
+		(data.startSize / 1000).toFixed(2) + ' kB to ' +
+		(data.endSize / 1000).toFixed(2) + ' kB and is ' +
+		formatPercent(1 - data.percent, 2) + '%' + difference;
+}
+
+/**
+ * Format a number as a percentage
+ * @param  {Number} num       Number to format as a percent
+ * @param  {Number} precision Precision of the decimal
+ * @return {String}           Formatted perentage
+ */
+function formatPercent(num, precision) {
+	return (num * 100).toFixed(precision);
+}
+
+/**
+ * Delete all files in a given path
+ * @param  {Array}   path - array of paths to delete
+ * @param  {Function} done - callback when complete
+ */
+function clean(path, done) {
+	log('Cleaning: ' + $.util.colors.blue(path));
+	del(path, done);
+}
+
+/**
+ * Inject files in a sorted sequence at a specified inject label
+ * @param   {Array} src   glob pattern for source files
+ * @param   {String} label   The label name
+ * @param   {Array} order   glob pattern for sort order of the files
+ * @returns {Stream}   The stream
+ */
+function inject(src, label, order) {
+	var options = {
+		read: false,
+		relative: true
+	};
+	if (label) {
+		options.name = 'inject:' + label;
+	}
+
+	return $.inject(orderSrc(src, order), options);
+}
+
+/**
+ * Order a stream
+ * @param   {Stream} src   The gulp.src stream
+ * @param   {Array} order Glob array pattern
+ * @returns {Stream} The ordered stream
+ */
+function orderSrc (src, order) {
+	//order = order || ['**/*'];
+	return gulp
+		.src(src)
+		.pipe($.if(order, $.order(order)));
+}
+
+/**
+ * Log a message or series of messages using chalk's blue color.
+ * Can pass in a string, object or array.
+ */
+function log(msg) {
+	if (typeof(msg) === 'object') {
+		for (var item in msg) {
+			if (msg.hasOwnProperty(item)) {
+				$.util.log($.util.colors.blue(msg[item]));
+			}
+		}
+	} else {
+		$.util.log($.util.colors.blue(msg));
+	}
+}
+
+module.exports = gulp;

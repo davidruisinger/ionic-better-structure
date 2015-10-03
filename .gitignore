@@ -4,4 +4,8 @@
 node_modules/
 platforms/
 plugins/
-www/
+www/**
+src/.tmp
+src/lib
+resources/android
+resources/ios

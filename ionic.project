@@ -2,12 +2,12 @@
 	"name": "ionic_better_structure",
 	"app_id": "",
 	"gulpStartupTasks": [
-		"sass",
+		"inject",
 		"watch"
 	],
-	"documentRoot": "dev",
+	"documentRoot": "src",
 	"watchPatterns": [
-		"dev/**/*",
-		"!dev/lib/**/*"
+		"src/**/*",
+		"src/.tmp/**/*"
 	]
 }
