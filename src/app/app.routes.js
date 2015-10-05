@@ -1,6 +1,6 @@
 (function() {
 	'use strict';
-	
+
 	angular
 		.module('app')
 		.config(routes);
@@ -19,47 +19,9 @@
 			url: '/tab',
 			abstract: true,
 			templateUrl: 'app/layout/tabs.html'
-		})
-
-		// Each tab has its own nav history stack:
-
-		.state('tab.dash', {
-			url: '/dash',
-			views: {
-				'tab-dash': {
-					templateUrl: 'app/dash/dash.html',
-					controller: 'DashController as vm'
-				}
-			}
-		})
-
-		.state('tab.chats', {
-			url: '/chats',
-			views: {
-				'tab-chats': {
-					templateUrl: 'app/chats/chats.html',
-					controller: 'ChatsController as vm'
-				}
-			}
-		})
-		.state('tab.chat-detail', {
-			url: '/chats/:chatId',
-			views: {
-				'tab-chats': {
-					templateUrl: 'app/chats/chat-detail.html',
-					controller: 'ChatDetailController as vm'
-				}
-			}
-		})
-
-		.state('tab.account', {
-			url: '/account',
-			views: {
-				'tab-account': {
-					templateUrl: 'app/account/account.html',
-					controller: 'AccountController as vm'				}
-			}
 		});
+
+		// Each tab has its own nav history stack which is defined in the corresponding module.
 
   		// if none of the above states are matched, use this as the fallback
   		$urlRouterProvider.otherwise('/tab/dash');
