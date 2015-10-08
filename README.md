@@ -62,6 +62,11 @@ A bunch of useful gulp tasks have been copied from the [HotTowel yeoman generato
 
     Displays all files affected and extended information about the code analysis.
 
+### Testing
+
+- `gulp test`
+
+	Runs all unit tests using karma runner & jasmine with phantomjs. Depends on vet task, for code analysis.
 
 ### Cleaning Up
 

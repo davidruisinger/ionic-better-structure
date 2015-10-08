@@ -11,12 +11,12 @@ module.exports = function() {
 		exclude: [
 			'src/lib/angular/angular.js',
 			'src/lib/angular-animate/*.js',
-			'src/lib/angular-animate/*.js',
 			'src/lib/angular-sanitize/*.js',
 			'src/lib/angular-ui-router/release/*.js'
 		]
 	};
 	var wiredep = require('wiredep');
+	var bowerFiles = wiredep({devDependencies: true})['js'];
 	var config = {
 		/**
 		 * File paths
@@ -66,7 +66,8 @@ module.exports = function() {
 				root: 'app/',
 				standalone: false
 			}
-		}
+		},
+		specHelpers: [src + 'test-helpers/*.js']
 	};
 
 
@@ -83,5 +84,28 @@ module.exports = function() {
 		return options;
 	};
 
+	/**
+	 * karma settings
+	 */
+	config.karma = getKarmaOptions();
+
 	return config;
+
+	////////////////
+
+	function getKarmaOptions() {
+		var options = {
+			files: [].concat(
+				bowerFiles,
+				config.specHelpers,
+				app + '**/*.module.js',
+				app + '**/*.js',
+				temp + config.templateCache.file
+			),
+			exclude: [],
+			preprocessors: {}
+		};
+
+		return options;
+	}
 };

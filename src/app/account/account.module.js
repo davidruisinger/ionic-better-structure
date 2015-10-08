@@ -3,6 +3,6 @@
 
 	angular
 		.module('app.account', [
-			// Dependencies
+			'ionic'
 		]);
 })();

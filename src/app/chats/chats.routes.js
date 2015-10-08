@@ -5,9 +5,9 @@
 		.module('app.chats')
 		.config(routes);
 
-	routes.$inject = ['$stateProvider', '$urlRouterProvider'];
+	routes.$inject = ['$stateProvider'];
 
-	function routes($stateProvider, $urlRouterProvider) {
+	function routes($stateProvider) {
 		$stateProvider
 
 		.state('tab.chats', {

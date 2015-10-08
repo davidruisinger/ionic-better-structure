@@ -106,7 +106,7 @@ gulp.task('wiredep', function() {
 		.src(config.index)
 		.pipe(wiredep(options))
 		.pipe(inject(config.js, '', config.jsOrder))
-		.pipe(gulp.dest(config.src));	
+		.pipe(gulp.dest(config.src));
 });
 
 gulp.task('inject', ['wiredep', 'styles', 'templatecache'], function() {
@@ -144,7 +144,7 @@ gulp.task('build', ['optimize', 'images', 'fonts'], function() {
  * and inject them into the new index.html
  * @return {Stream}
  */
-gulp.task('optimize', ['inject'/*, 'test' */], function() {
+gulp.task('optimize', ['inject', 'test'], function() {
 	log('Optimizing the js, css, and html');
 
 	var assets = $.useref.assets();
@@ -226,7 +226,13 @@ gulp.task('clean-code', function(done) {
  * @return {Stream}
  */
 gulp.task('test', ['vet', 'templatecache'], function(done) {
-	//startTests(true /*singleRun*/ , done);
+	var excludeFiles = [];
+	var Server = require('karma').Server;
+	new Server({
+		configFile: __dirname + '/karma.conf.js',
+		exclude: excludeFiles,
+		singleRun: true
+	}).start();
 });
 
 

@@ -3,6 +3,6 @@
 
 	angular
 		.module('app.dash', [
-			// Dependencies
+			'ionic'
 		]);
 })();
