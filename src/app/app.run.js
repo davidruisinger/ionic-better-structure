@@ -8,10 +8,6 @@
 	runBlock.$inject = ['$ionicPlatform'];
 
 	function runBlock($ionicPlatform) {
-		// BESSER: INJECT DER FACTORY UND DANN ALLES ALS FACTORY EINZELN INITIIEREN
-		// authenticator.initialize();
-		// translator.initialize();
-
 		$ionicPlatform.ready(function() {
 			// Hide the accessory bar by default (remove this to show the accessory bar
 			// above the keyboard for form inputs)
@@ -19,7 +15,7 @@
 				cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
 				cordova.plugins.Keyboard.disableScroll(true);
 			}
-		
+
 			if (window.StatusBar) {
 				// org.apache.cordova.statusbar required
 				StatusBar.styleLightContent();
