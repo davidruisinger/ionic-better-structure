@@ -2,6 +2,7 @@ var args = require('yargs').argv;
 var config = require('./gulp.config')();
 var del = require('del');
 var gulp = require('gulp');
+var Server = require('karma').Server;
 var $ = require('gulp-load-plugins')({lazy: true});
 
 /**
@@ -79,7 +80,6 @@ gulp.task('images', ['clean-images'], function() {
 gulp.task('templatecache', ['clean-code'], function() {
 	log('Creating an AngularJS $templateCache');
 
-	console.log(config.htmltemplates);
 	return gulp
 		.src(config.htmltemplates)
 		.pipe($.if(args.verbose, $.bytediff.start()))
@@ -155,7 +155,7 @@ gulp.task('optimize', ['inject', 'test'], function() {
 		.pipe($.plumber())
 		.pipe(inject(templateCache, 'templates'))
 		.pipe(assets)
-		//.pipe($.if('*.css', $.minifyCss()))
+		.pipe($.if('*.css', $.minifyCss()))
 		// Fix ionic fonts path
 		.pipe($.if('*.css', $.cssUrlAdjuster({
 			replace: ['../lib/ionic/fonts','../fonts'],
@@ -227,11 +227,13 @@ gulp.task('clean-code', function(done) {
  */
 gulp.task('test', ['vet', 'templatecache'], function(done) {
 	var excludeFiles = [];
-	var Server = require('karma').Server;
+
 	new Server({
 		configFile: __dirname + '/karma.conf.js',
 		exclude: excludeFiles,
 		singleRun: true
+	}, function() {
+		done();
 	}).start();
 });
 
