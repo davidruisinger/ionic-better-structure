@@ -32,7 +32,7 @@ Everything is set up to serve from this src folder using
 $ ionic serve
 ```
 
-## Building process
+## Build process
 
 This project comes with a before_build hook to run the 'gulp build' task before actually building the app with cordova. The 'gulp build' task concatenates, minifies and copies the files into the 'www' folder from where cordova is loading the files. So you can just use the standard ionic build commands:
 
