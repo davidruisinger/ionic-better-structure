@@ -1,23 +1,23 @@
 (function() {
-	'use strict';
+    'use strict';
 
-	angular
-		.module('app.dash')
-		.config(routes);
+    angular
+    .module('app.dash')
+    .config(routes);
 
-	routes.$inject = ['$stateProvider'];
+    routes.$inject = ['$stateProvider'];
 
-	function routes($stateProvider) {
-		$stateProvider
+    function routes($stateProvider) {
+        $stateProvider
 
-		.state('tab.dash', {
-			url: '/dash',
-			views: {
-				'tab-dash': {
-					templateUrl: 'app/dash/dash.html',
-					controller: 'DashController as vm'
-				}
-			}
-		});
-	}
+        .state('tab.dash', {
+            url: '/dash',
+            views: {
+                'tab-dash': {
+                    templateUrl: 'app/dash/dash.html',
+                    controller: 'DashController as vm'
+                }
+            }
+        });
+    }
 })();

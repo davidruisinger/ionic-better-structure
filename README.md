@@ -19,12 +19,12 @@ $ bower install
 
 All working files are underneath the 'src' folder trying to follow the [angular styleguide](https://github.com/johnpapa/angular-styleguide) created by [johnpapa](https://github.com/johnpapa).
 
-	/src
-		/app
-		/images
-		/lib
-		/styles
-		index.html
+    /src
+        /app
+        /images
+        /lib
+        /styles
+        index.html
 
 
 Everything is set up to serve from this src folder using
@@ -66,7 +66,7 @@ A bunch of useful gulp tasks have been copied from the [HotTowel yeoman generato
 
 - `gulp test`
 
-	Runs all unit tests using karma runner & jasmine with phantomjs. Depends on vet task, for code analysis.
+    Runs all unit tests using karma runner & jasmine with phantomjs. Depends on vet task, for code analysis.
 
 ### Cleaning Up
 

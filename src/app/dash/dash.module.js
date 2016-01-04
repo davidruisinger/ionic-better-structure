@@ -1,8 +1,8 @@
 (function() {
-	'use strict';
+    'use strict';
 
-	angular
-		.module('app.dash', [
-			'ionic'
-		]);
+    angular
+    .module('app.dash', [
+        'ionic'
+    ]);
 })();

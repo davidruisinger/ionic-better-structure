@@ -1,22 +1,22 @@
 (function() {
-	'use strict';
+    'use strict';
 
-	angular
-		.module('app.chats')
-		.controller('ChatDetailController', ChatDetailController);
+    angular
+    .module('app.chats')
+    .controller('ChatDetailController', ChatDetailController);
 
-	ChatDetailController.$inject = ['$stateParams', 'ChatsService'];
+    ChatDetailController.$inject = ['$stateParams', 'ChatsService'];
 
-	/* @ngInject */
-	function ChatDetailController($stateParams, ChatsService) {
-		var vm = this;
-		vm.chat = ChatsService.get($stateParams.chatId);
+    /* @ngInject */
+    function ChatDetailController($stateParams, ChatsService) {
+        var vm = this;
+        vm.chat = ChatsService.get($stateParams.chatId);
 
-		activate();
+        activate();
 
-		////////////////
+        ////////////////
 
-		function activate() {
-		}
-	}
+        function activate() {
+        }
+    }
 })();

@@ -1,16 +1,16 @@
 (function() {
-	'use strict';
+    'use strict';
 
-	angular
-		.module('app.core', [
-			/* Angular modules */
-			// 'ngResource',
-			// 'ngMessages',
+    angular
+    .module('app.core', [
+        /* Angular modules */
+        // 'ngResource',
+        // 'ngMessages',
 
-			/* Cross-app module */
-			// 'my.appModule',
+        /* Cross-app module */
+        // 'my.appModule',
 
-			/* 3rd party modules */
-			// 'firebase'
-		]);
+        /* 3rd party modules */
+        // 'firebase'
+    ]);
 })();

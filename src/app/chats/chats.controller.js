@@ -1,27 +1,27 @@
 (function() {
-	'use strict';
+    'use strict';
 
-	angular
-		.module('app.chats')
-		.controller('ChatsController', ChatsController);
+    angular
+    .module('app.chats')
+    .controller('ChatsController', ChatsController);
 
-	ChatsController.$inject = ['ChatsService'];
+    ChatsController.$inject = ['ChatsService'];
 
-	/* @ngInject */
-	function ChatsController(ChatsService) {
-		var vm = this;
-		vm.chats = ChatsService.all();
-		vm.remove = remove;
+    /* @ngInject */
+    function ChatsController(ChatsService) {
+        var vm = this;
+        vm.chats = ChatsService.all();
+        vm.remove = remove;
 
-		activate();
+        activate();
 
-		////////////////
+        ////////////////
 
-		function activate() {
-		}
+        function activate() {
+        }
 
-		function remove(chat) {
-			ChatsService.remove(chat);
-		}
-	}
+        function remove(chat) {
+            ChatsService.remove(chat);
+        }
+    }
 })();

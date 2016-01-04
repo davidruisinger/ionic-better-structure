@@ -1,21 +1,21 @@
 (function() {
-	'use strict';
+    'use strict';
 
-	angular
-		.module('app.dash')
-		.controller('DashController', DashController);
+    angular
+    .module('app.dash')
+    .controller('DashController', DashController);
 
-	DashController.$inject = [];
+    DashController.$inject = [];
 
-	/* @ngInject */
-	function DashController() {
-		var vm = this;
+    /* @ngInject */
+    function DashController() {
+        var vm = this;
 
-		activate();
+        activate();
 
-		////////////////
+        ////////////////
 
-		function activate() {
-		}
-	}
+        function activate() {
+        }
+    }
 })();

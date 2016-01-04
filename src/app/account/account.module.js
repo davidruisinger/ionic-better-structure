@@ -1,8 +1,8 @@
 (function() {
-	'use strict';
+    'use strict';
 
-	angular
-		.module('app.account', [
-			'ionic'
-		]);
+    angular
+    .module('app.account', [
+        'ionic'
+    ]);
 })();

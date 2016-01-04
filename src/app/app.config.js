@@ -1,14 +1,14 @@
 (function() {
-	'use strict';
+    'use strict';
 
-	angular
-		.module('app')
-		.config(configure);
+    angular
+    .module('app')
+    .config(configure);
 
-		configure.$inject = [];
+    configure.$inject = [];
 
-	function configure () {
-		// Add your configuration here
-	}
+    function configure () {
+        // Add your configuration here
+    }
 
 })();

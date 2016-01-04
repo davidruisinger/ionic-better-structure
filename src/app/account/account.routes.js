@@ -1,23 +1,23 @@
 (function() {
-	'use strict';
+    'use strict';
 
-	angular
-		.module('app.account')
-		.config(routes);
+    angular
+    .module('app.account')
+    .config(routes);
 
-	routes.$inject = ['$stateProvider'];
+    routes.$inject = ['$stateProvider'];
 
-	function routes($stateProvider) {
-		$stateProvider
+    function routes($stateProvider) {
+        $stateProvider
 
-		.state('tab.account', {
-			url: '/account',
-			views: {
-				'tab-account': {
-					templateUrl: 'app/account/account.html',
-					controller: 'AccountController as vm'
-				}
-			}
-		});
-	}
+        .state('tab.account', {
+            url: '/account',
+            views: {
+                'tab-account': {
+                    templateUrl: 'app/account/account.html',
+                    controller: 'AccountController as vm'
+                }
+            }
+        });
+    }
 })();

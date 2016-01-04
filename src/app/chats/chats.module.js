@@ -1,8 +1,8 @@
 (function() {
-	'use strict';
+    'use strict';
 
-	angular
-		.module('app.chats', [
-			'ionic'
-		]);
+    angular
+    .module('app.chats', [
+        'ionic'
+    ]);
 })();
