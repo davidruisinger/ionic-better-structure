@@ -10,7 +10,7 @@
     /* @ngInject */
     function ChatsController(ChatsService) {
         var vm = this;
-        vm.chats = ChatsService.all();
+        vm.chats = [];
         vm.remove = remove;
 
         activate();
@@ -18,6 +18,7 @@
         ////////////////
 
         function activate() {
+          vm.chats = ChatsService.all();
         }
 
         function remove(chat) {
