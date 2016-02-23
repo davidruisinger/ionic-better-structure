@@ -128,7 +128,7 @@ A bunch of useful gulp tasks have been copied from the [HotTowel yeoman generato
 
 - `ionic serve`
 
-    You can us the standard ionic serve task here. 
+    You can us the standard ionic serve task here.
 
 
 ### Building Production Code
@@ -140,3 +140,5 @@ A bunch of useful gulp tasks have been copied from the [HotTowel yeoman generato
 - `gulp build`
 
     Copies the ionic fonts, copies images and runs `gulp optimize` to build the production code to the build folder.
+
+**NOTE:** This project contains a before_build hook for cordova which so that the gulp build task is run automatically when building with `cordova build [platfrom]` or `ionic build [platfrom]`
