@@ -18,7 +18,7 @@
         ////////////////
 
         function activate() {
-          vm.chats = ChatsService.all();
+            vm.chats = ChatsService.all();
         }
 
         function remove(chat) {
